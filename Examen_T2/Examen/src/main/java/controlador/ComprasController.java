@@ -1,0 +1,44 @@
+package controlador;
+
+import servicio.CategoriaService;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import modelo.Categoria;
+
+@Controller
+public class ComprasController {
+	@Autowired
+    private CategoriaService compraService;
+
+    @GetMapping("/showcarrito")
+    public String mostrarCarrito(Model model) {
+        model.addAttribute("compras", compraService.obtenerTodas());
+        return "carrito";
+    }
+
+    @GetMapping("/resumen")
+    public String mostrarResumenCompra(Model model) {
+        List<Categoria> compras = compraService.obtenerTodas();
+
+        double totalCompra = calcularTotalCompra(compras);
+
+        model.addAttribute("compras", compras);
+        model.addAttribute("totalCompra", totalCompra);
+
+        return "resumen";
+    }
+
+    private double calcularTotalCompra(List<Categoria> compras) {
+        double total = 0.0;
+        for (Categoria compra : compras) {
+            total += compra.getTotal();
+        }
+        return total;
+    }
+}
